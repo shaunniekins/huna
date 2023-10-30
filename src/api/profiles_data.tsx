@@ -1,6 +1,22 @@
 import { supabase } from "../../utils/supabase";
 import { ProfileData } from "@/types/dataTypes";
 
+export const fetchProfileData = async () => {
+  try {
+    const { data, error } = await supabase.from("profiles").select("*");
+
+    if (error) {
+      console.error("Error inserting data:", error);
+      return { data: null, error };
+    } else {
+      return { data, error: null };
+    }
+  } catch (error) {
+    console.error("An error occurred:", error);
+    return { data: null, error };
+  }
+};
+
 export const insertProfileData = async (rowData: ProfileData) => {
   try {
     const { data, error } = await supabase

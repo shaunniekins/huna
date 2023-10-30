@@ -7,7 +7,9 @@ import { fetchNoteData } from "@/api/notes_data";
 
 import { AiOutlinePlus } from "react-icons/ai";
 import { supabase } from "../../utils/supabase";
-import { NoteDataItem } from "@/types/dataTypes";
+import { NoteDataItem, ProfileData } from "@/types/dataTypes";
+import { useRouter } from "next/navigation";
+import { fetchProfileData } from "@/api/profiles_data";
 
 // interface NoteCardProps {
 //   note: string;
@@ -23,17 +25,24 @@ import { NoteDataItem } from "@/types/dataTypes";
 //   let tagBackgroundColor;
 
 type Note = any;
+type User = any;
+type Username = any;
 
 const NoteCard = ({
+  username,
   note,
   isDefaultLayout,
   tag,
 }: {
+  username: string;
   note: string;
   isDefaultLayout: boolean;
   tag: string;
 }) => {
   let tagBackgroundColor;
+
+  // console.log("username", username);
+  // console.log("tag", tag);
 
   // Define the background color based on the tag value
   switch (tag) {
@@ -64,7 +73,7 @@ const NoteCard = ({
       <p className="break-all text-sm">{note}</p>
       <div className="flex justify-between pb-4 text-xs text-gray-600">
         <p className={`rounded-full px-2 ${tagBackgroundColor}`}>{tag}</p>
-        <p className="">username</p>
+        <p className="">{username}</p>
       </div>
     </div>
     // the bg color of the tag will be based on the tag
@@ -76,6 +85,64 @@ const Home = () => {
   const [isDefaultLayout, setDefaultLayout] = useState(true);
 
   const [noteData, setNoteData] = useState<NoteDataItem[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [profileData, setProfileData] = useState<ProfileData[]>([]);
+  const [currentUsername, setCurrentUsername] = useState<string>(""); // Initialize it as an empty string, not an empty array
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+
+        if (error && error.status === 401) {
+          // Handle the error
+        } else if (error) {
+          // Handle the error
+        } else {
+          setUser(user);
+        }
+      } catch (error) {
+        console.error("An unexpected error occurred:", error);
+      }
+    };
+
+    fetchData();
+  }, [router]);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const { data, error } = await fetchProfileData();
+
+        if (error) {
+          console.error("Error fetching profile data:", error);
+        } else {
+          setProfileData(data || []);
+
+          if (data) {
+            // Use .find only if data is not null
+            const currentUserProfile = data.find(
+              (profile) => profile.id === user.id
+            );
+
+            if (currentUserProfile) {
+              setCurrentUsername(currentUserProfile.username);
+              // You can use currentUsername in your component
+            }
+          }
+        }
+      } catch (error) {
+        console.error("An unexpected error occurred:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,8 +176,10 @@ const Home = () => {
             setNoteData((prevNoteData) => [
               ...prevNoteData,
               {
+                profile_id: payload.new.string,
+                username: payload.new.username,
                 content: payload.new.content,
-                tag: payload.new.tag || null,
+                tag: payload.new.tag,
               },
             ]);
           }
@@ -121,7 +190,7 @@ const Home = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase]);
+  }, []);
 
   return (
     <div className="w-screen bg-gray-100">
@@ -134,14 +203,18 @@ const Home = () => {
           isDefaultLayout ? "flex flex-col" : "grid grid-cols-2 gap-x-2"
         }`}>
         {noteData &&
-          noteData.map((noteItem: NoteDataItem, index: number) => (
-            <NoteCard
-              key={index}
-              note={noteItem.content}
-              isDefaultLayout={isDefaultLayout}
-              tag={noteItem.tag || ""}
-            />
-          ))}
+          noteData
+            .slice()
+            .reverse() // Reverse the array
+            .map((noteItem: NoteDataItem, index: number) => (
+              <NoteCard
+                key={index}
+                username={noteItem.username}
+                note={noteItem.content}
+                isDefaultLayout={isDefaultLayout}
+                tag={noteItem.tag}
+              />
+            ))}
       </div>
 
       <div className="flex md:hidden bottom-5 right-4 fixed z-50 rounded-full bg-blue-400 p-2 items-center justify-center">
@@ -156,6 +229,7 @@ const Home = () => {
         <InsertNoteModal
           insertToggle={insertToggle}
           setInsertToggle={setInsertToggle}
+          currentUsername={currentUsername}
         />
       )}
     </div>

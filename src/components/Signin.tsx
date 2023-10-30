@@ -209,7 +209,7 @@ const SignIn = () => {
           <div className="bottom-5 self-center absolute">
             {isSignIn ? (
               <p className="text-black text-xs">
-                Don't have an account?{" "}
+                Don&rsquo;t have an account?{" "}
                 <button
                   className="text-[#54B5E6] font-semibold"
                   onClick={handleSignInChange}>

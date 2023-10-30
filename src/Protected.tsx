@@ -36,7 +36,7 @@ const Protected = ({ children }: { children: React.ReactNode }) => {
     };
 
     fetchData();
-  }, []);
+  }, [router]);
 
   if (isLoading) {
     // You can show a loading spinner or message while checking authentication.

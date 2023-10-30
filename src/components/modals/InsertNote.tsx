@@ -6,15 +6,19 @@ import { insertNoteData } from "@/api/notes_data";
 interface InsertNoteModalProps {
   insertToggle: boolean;
   setInsertToggle: (value: boolean) => void;
+  currentUsername: string;
 }
 
 const InsertNoteModal: React.FC<InsertNoteModalProps> = ({
   insertToggle,
   setInsertToggle,
+  currentUsername,
 }) => {
   const [currentUserData, setCurrentUserData] = useState("");
   const [noteInput, setNoteInput] = useState("");
   const [tagSelected, setTagSelected] = useState("");
+
+  // console.log("currentUsername", currentUsername);
 
   const handleNoteInputChange = (e: {
     target: { value: SetStateAction<string> };
@@ -45,6 +49,7 @@ const InsertNoteModal: React.FC<InsertNoteModalProps> = ({
 
         const newNoteData: NoteData = {
           profile_id: user?.id || "",
+          username: currentUsername,
           content: noteInput,
           tag: tagSelected,
         };

@@ -15,6 +15,7 @@ export const fetchNoteData = async () => {
 };
 
 export const insertNoteData = async (rowData: NoteData) => {
+  // console.log("rowData", rowData);
   try {
     const { data, error } = await supabase
       .from("notes")

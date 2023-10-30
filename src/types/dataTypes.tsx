@@ -5,11 +5,14 @@ export type ProfileData = {
 
 export type NoteData = {
   profile_id: string;
+  username: string;
   content: string;
   tag: string;
 };
 
 export type NoteDataItem = {
+  profile_id: string;
+  username: string;
   content: string;
-  tag: string | null;
+  tag: string;
 };
