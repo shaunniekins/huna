@@ -132,7 +132,7 @@ const SignIn = () => {
 
   return (
     <>
-      <div className="w-screen h-[100dvh] flex flex-col items-center px-5 font-Roboto justify-around font-Montserrat cursive">
+      <div className="container mx-auto sm:w-[30rem] w-screen h-[100svh] flex flex-col items-center px-5 font-Roboto justify-around font-Montserrat cursive">
         {indicatorMsg && (
           <Indicator msg={indicatorMsg} status={indicatorStatus} />
         )}

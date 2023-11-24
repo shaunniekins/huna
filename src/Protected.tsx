@@ -41,7 +41,7 @@ const Protected = ({ children }: { children: React.ReactNode }) => {
   if (isLoading) {
     // You can show a loading spinner or message while checking authentication.
     return (
-      <div className="flex w-screen h-[100dvh] justify-center items-center">
+      <div className="flex w-screen h-[100svh] justify-center items-center">
         <ThreeDots
           height="80"
           width="80"
